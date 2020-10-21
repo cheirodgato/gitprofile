@@ -1,12 +1,7 @@
 import React from 'react';
 
 const LayoutProfile = () => {
-  return (
-    <div>
-      <h1>searchBar</h1>
-      <h1>usersProfile</h1>
-    </div>
-  );
+  return <h1>Pois é...</h1>;
 };
 
 export default LayoutProfile;

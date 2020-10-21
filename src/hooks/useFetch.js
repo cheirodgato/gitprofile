@@ -1,7 +1,8 @@
 import useSWR from 'swr';
-import { getUsers } from '../services/api';
+import { searchUsers } from '../services/api';
 
+const baseURL = 'https://api.github.com';
 export const useFetch = () => {
-  const { data, error } = useSWR(getUsers);
+  const { data, error } = useSWR(baseURL, searchUsers);
   return { seekingError: !data && !error, data, error };
 };

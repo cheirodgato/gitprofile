@@ -6,7 +6,7 @@ export const Container = styled.div`
   text-align: center;
   max-width: 100%;
 
-  h1 {
+  #h {
     font-size: 30px;
     display: flex;
     flex-direction: row;
@@ -18,16 +18,16 @@ export const Container = styled.div`
     margin-right: 10px;
   }
 
-  Form {
+  form {
     flex: auto;
     flex-direction: row;
     align-content: center;
 
-    #Input {
+    input {
       text-align: center;
     }
 
-    Button {
+    button {
       margin: 3%;
       svg {
         margin-left: 10px;
@@ -37,5 +37,6 @@ export const Container = styled.div`
 
   LayoutProfile {
     flex-direction: row;
+    text-justify: auto;
   }
 `;

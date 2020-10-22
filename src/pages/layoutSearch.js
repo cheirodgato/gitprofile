@@ -1,43 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaGithubAlt, FaSearch } from 'react-icons/fa';
-import { Form, Button } from 'react-bootstrap';
-import { useFetch } from '../hooks/useFetch';
 import { Container } from './layoutStyle';
-import LayoutProfile from './layoutProfile';
+import { LayoutProfile } from './layoutProfile';
 
 const LayoutSearch = () => {
-  const user = '';
-  const { seekingError, error } = useFetch(`/search/users?q=${user}`);
-  if (seekingError) {
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
+  const [users, setUsers] = useState('');
+  function handleOnInput() {
+    const fild = document.getElementById('fild');
+    setUsers(document.addEventListener('button', fild.value));
   }
-  if (error) {
-    return <h1>Erro: {error.message}</h1>;
-  }
+
   return (
     <Container>
-      <h1>
+      <div>
         <FaGithubAlt />
         Git Profile
-      </h1>
-
-      <Form>
-        <Form.Group controlId="formBasicEmail">
-          <Form.Control id="Input" type="search" placeholder="Search username" />
-        </Form.Group>
-
-        <Button variant="primary" type="submit">
+      </div>
+      <form>
+        <input id="fild" name={users} />
+        <button
+          type="button"
+          onClick={(e) => {
+            handleOnInput();
+            e.preventDefault();
+          }}
+        >
           <FaSearch />
-        </Button>
-      </Form>
+        </button>
+      </form>
 
-      <LayoutProfile />
+      <LayoutProfile user="octocat" />
     </Container>
   );
 };

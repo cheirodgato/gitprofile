@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const searchUsers = (...args) => {
+const getApi = (...args) => {
   return axios
     .get(...args)
     .then((response) => {
@@ -15,4 +15,4 @@ const searchUsers = (...args) => {
     });
 };
 
-export { searchUsers };
+export { getApi };

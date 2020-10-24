@@ -1,26 +1,60 @@
-import React, { useCallback } from 'react';
-import { FaGithubAlt } from 'react-icons/fa';
-import { Jumbotron, Container, CardImg, Card, Form } from 'react-bootstrap';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { useFetch } from '../hooks/useFetch';
+import React, { useState } from 'react';
+import { FaGithubAlt, FaSearch } from 'react-icons/fa';
+import { Row, Button, Jumbotron, Container, Card, Form, Col } from 'react-bootstrap';
+import LayoutTable from './LayoutTable';
 
 const LayoutSearch = () => {
-  const { data, error } = useFetch(`/users?per_page=5`);
+  const [data, setData] = useState({});
+  const [username, setUsername] = useState('');
+  const [repository, setRepositories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleOnProfile = useCallback((user) => {
-    localStorage.setItem('user', user);
-  }, []);
-  const handleOnAvatar = useCallback((avatar) => {
-    localStorage.setItem('avatar', avatar);
-  }, []);
+  async function gets() {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append('Authorization', '7cfc96fe20cfa14838444b3edad8b3cab59c587b');
 
-  if (!data) {
-    return <h4>Loading...</h4>;
+      const requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow',
+      };
+
+      setLoading(true);
+
+      const profile = await fetch(`https://api.github.com/users/${username}`, requestOptions);
+      const profileJson = await profile.json();
+
+      const repositories = await fetch(profileJson.repos_url);
+      let repoJson = await repositories.json();
+      repoJson = await Promise.all(
+        repoJson.map(async (repos) => {
+          const commitUrl = repos.commits_url.split('{')[0];
+          let commits = await fetch(commitUrl);
+          commits = await commits.json();
+          commits = commits.length;
+          return {
+            commits,
+          };
+        })
+      );
+      setData(profileJson);
+      setRepositories(repoJson);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    }
+    setLoading(false);
   }
-  if (error) {
-    return <h4>Error: {error.message}</h4>;
-  }
+
+  const onChangeHandler = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    gets();
+  };
 
   return (
     <Container className="p-3">
@@ -32,30 +66,22 @@ const LayoutSearch = () => {
               <h1 className="header card-text card-header align-self-center"> GitProfile </h1>
             </Card>
           </Form.Group>
-          <Form.Group controlId="formGroupListUsers">
-            <Card className="card-body mb-3 text-md-center">
-              <ul className="no-gutters list-unstyled">
-                {data.map((user) => (
-                  <Link
-                    onClick={() => {
-                      handleOnProfile(user.login);
-                      handleOnAvatar(user.avatar_url);
-                    }}
-                    to="/profile"
-                  >
-                    <li>
-                      <CardImgCustom
-                        className="card-img border border-dark rounded-circle  rounded-sm"
-                        src={user.avatar_url}
-                        alt="User"
-                      />
-                      <StyledP className="card-text">{user.login}</StyledP>
-                    </li>
-                  </Link>
-                ))}
-              </ul>
-            </Card>
-          </Form.Group>
+          <Row>
+            <Col className="col-11">
+              <Form.Group controlId="formBasicSearch">
+                <Form.Control type="text" placeholder="Search users" value={username} onChange={onChangeHandler} />
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group controlId="formBasicButton">
+                <Button variant="primary" type="submit" onClick={submitHandler}>
+                  {/* <a className="text-white mr-2">Search</a> */}
+                  <FaSearch />
+                </Button>
+              </Form.Group>
+            </Col>
+          </Row>
+          <LayoutTable data={data} repositories={repository} loading={loading} />
         </Form>
       </Jumbotron>
     </Container>
@@ -63,16 +89,3 @@ const LayoutSearch = () => {
 };
 
 export default LayoutSearch;
-
-const CardImgCustom = styled(CardImg)`
-  width: 125px;
-  margin: 5px;
-  padding: 5px;
-`;
-// eslint-disable-next-line jsx-a11y/anchor-is-valid
-const pCustom = ({ className, children }) => <a className={className}>{children}</a>;
-const StyledP = styled(pCustom)`
-  font-family: 'Courier New', monospace;
-  font-size: 44px;
-  color: dimgrey;
-`;

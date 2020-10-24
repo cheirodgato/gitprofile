@@ -1,19 +1,25 @@
-import React from 'react';
-import useSWR from 'swr';
+import React, { useState } from 'react';
 import { Col, ListGroup, Container, Jumbotron, Row, CardImg, Breadcrumb } from 'react-bootstrap';
-import { getApi } from '../services/api';
-
-const useFetchRepos = (url) => {
-  const { data, error } = useSWR(`https://api.github.com${url}`, getApi());
-  return { data, error };
-};
+import { useFetch } from '../hooks/useFetch';
+import { api } from '../services/api';
 
 const LayoutProfile = () => {
+  const [c, setC] = useState([]);
   const user = localStorage.getItem('user');
   const avatar = localStorage.getItem('avatar');
-  const { data, error } = useFetchRepos(`/users/${user}/repos`);
+  const { data, error } = useFetch(`/users/${user}/repos`);
+
   if (!data) {
     return <h1>Loding...</h1>;
+  }
+  if (data) {
+    const commit = data.json();
+    // eslint-disable-next-line no-console
+    console.log('aq', commit.commits_url);
+    api.get(commit.commits_url).then((r) => {
+      const nCommits = r.data;
+      return setC(nCommits);
+    });
   }
   if (error) {
     return <h1>Erro: {error.message}</h1>;
@@ -47,7 +53,9 @@ const LayoutProfile = () => {
           <ListGroup className="pre-scrollable">
             {data.map((repo) => (
               <ListGroup.Item key={repo.id}>
-                <a style={{ font: 'small-caps', fontFamily: 'Courier New', fontSize: '22px' }}>{repo.name}</a>
+                <p className="card-text">
+                  {repo.name} {c}
+                </p>
               </ListGroup.Item>
             ))}
           </ListGroup>

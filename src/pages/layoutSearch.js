@@ -1,13 +1,9 @@
 import React, { useCallback } from 'react';
 import { FaGithubAlt } from 'react-icons/fa';
-import useSWR from 'swr';
-import { Jumbotron, Container, ListGroup, Row, CardImg, Col, Card } from 'react-bootstrap';
-import { getApi } from '../services/api';
-
-const useFetch = (url) => {
-  const { data, error } = useSWR(`https://api.github.com${url}`, getApi);
-  return { data, error };
-};
+import { Jumbotron, Container, CardImg, Card, Form } from 'react-bootstrap';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { useFetch } from '../hooks/useFetch';
 
 const LayoutSearch = () => {
   const { data, error } = useFetch(`/users?per_page=5`);
@@ -20,50 +16,63 @@ const LayoutSearch = () => {
   }, []);
 
   if (!data) {
-    return <h4>Carregando...</h4>;
+    return <h4>Loading...</h4>;
   }
   if (error) {
-    return <h4>Erro: {error.message}</h4>;
+    return <h4>Error: {error.message}</h4>;
   }
 
   return (
     <Container className="p-3">
       <Jumbotron>
-        <Row className="justify-content-md-center">
-          <Card style={{ width: '50%', marginBottom: '5%', paddingTop: '2%' }} bg="dark" text="white">
-            <FaGithubAlt style={{ alignSelf: 'center' }} size="48px" />
-            <h1 className="header">GitProfile</h1>
-          </Card>
-        </Row>
-        <Col className="text-md-center">
-          <ListGroup>
-            {data.map((user) => (
-              <ListGroup.Item
-                defaultActiveKey={user.id}
-                action
-                onClick={() => {
-                  handleOnProfile(user.login);
-                  handleOnAvatar(user.avatar_url);
-                }}
-                href="/profile"
-              >
-                <CardImg
-                  style={{
-                    width: '10%',
-                    borderRadius: '100%',
-                    border: '5px solid',
-                  }}
-                  src={user.avatar_url}
-                  alt="User"
-                />
-                <a style={{ font: 'small-caps', fontFamily: 'Courier New', fontSize: '42px' }}>{user.login}</a>
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        </Col>
+        <Form>
+          <Form.Group controlId="formGroupCard">
+            <Card className="card" bg="dark" text="white">
+              <FaGithubAlt className="card-img-top" size="48px" />
+              <h1 className="header card-text card-header align-self-center"> GitProfile </h1>
+            </Card>
+          </Form.Group>
+          <Form.Group controlId="formGroupListUsers">
+            <Card className="card-body mb-3 text-md-center">
+              <ul className="no-gutters list-unstyled">
+                {data.map((user) => (
+                  <Link
+                    onClick={() => {
+                      handleOnProfile(user.login);
+                      handleOnAvatar(user.avatar_url);
+                    }}
+                    to="/profile"
+                  >
+                    <li>
+                      <CardImgCustom
+                        className="card-img border border-dark rounded-circle  rounded-sm"
+                        src={user.avatar_url}
+                        alt="User"
+                      />
+                      <StyledP className="card-text">{user.login}</StyledP>
+                    </li>
+                  </Link>
+                ))}
+              </ul>
+            </Card>
+          </Form.Group>
+        </Form>
       </Jumbotron>
     </Container>
   );
 };
 
 export default LayoutSearch;
+
+const CardImgCustom = styled(CardImg)`
+  width: 125px;
+  margin: 5px;
+  padding: 5px;
+`;
+// eslint-disable-next-line jsx-a11y/anchor-is-valid
+const pCustom = ({ className, children }) => <a className={className}>{children}</a>;
+const StyledP = styled(pCustom)`
+  font-family: 'Courier New', monospace;
+  font-size: 44px;
+  color: dimgrey;
+`;

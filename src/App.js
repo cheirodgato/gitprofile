@@ -1,15 +1,14 @@
-import 'css-doodle';
-import * as React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import React from 'react';
 import GlobalStyle from './styles/global';
-import Routes from './routes';
+import Layout from './pages/Layout';
+import DataProvider from './context/Data';
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes />
+    <DataProvider>
+      <Layout />
       <GlobalStyle />
-    </BrowserRouter>
+    </DataProvider>
   );
 };
 

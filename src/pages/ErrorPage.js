@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-export default function Error() {
+export default function ErrorPage() {
   return (
     <h1>
       Error 404

@@ -8,9 +8,11 @@ export default createGlobalStyle`
     box-sizing: border-box;
   }
 
-  .header {
-  margin-bottom: 5%;
-  font-family: "Courier 10 Pitch", Helvetica, monospace;
-  text-align: center;
-}
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 `;

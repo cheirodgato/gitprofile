@@ -5,7 +5,7 @@ import Error from './pages/ErrorPage';
 import Layout from './pages/Layout';
 
 export default () => (
-  <BrowserRouter basename={process.env.PUBLIC_URL}>
+  <BrowserRouter>
     <Switch>
       <Route path="/" exact component={Layout} />
       <Route path="/" component={Error} />
